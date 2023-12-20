@@ -10,7 +10,7 @@ app.use(async ctx => {
     // the parsed body will store in ctx.request.body
     // if nothing was parsed, body will be an empty object {}
 
-    let question = ctx.request.body.searchKey;
+    let searchKey = ctx.request.body.searchKey;
     let engine = ctx.request.body.engine ? ctx.request.body.engine : 'baidu';
 
     const results = await searchEngineTool(searchKey, engine);

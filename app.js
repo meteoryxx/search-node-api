@@ -11,7 +11,7 @@ app.use(async ctx => {
     // if nothing was parsed, body will be an empty object {}
 
     let searchKey = ctx.request.body.searchKey;
-    let engine = ctx.request.body.engine ? ctx.request.body.engine : 'baidu';
+    let engine = ctx.request.body.engine || ctx.query.engine || 'baidu';
 
     const results = await searchEngineTool(searchKey, engine);
     console.log('搜索结果:');

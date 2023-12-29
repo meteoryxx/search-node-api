@@ -1,9 +1,10 @@
 const puppeteer = require("puppeteer");
 
 async function googleSearch(query) {
+  let browser;
   try {
     //https://serpapi.com/search-api
-    const browser = await puppeteer.launch();
+    browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(
       `https://www.google.com.hk/search?q=${encodeURIComponent(
@@ -20,7 +21,8 @@ async function googleSearch(query) {
       return firstFiveLiElements.map((li) => {
         const linkElement = li.querySelector("a");
         const href = linkElement.getAttribute("href");
-        const title = linkElement.querySelector("a > h3").textContent;
+        const titleElement = linkElement.querySelector("h3");
+        const title = titleElement ? titleElement.textContent : "";
         const abstract = Array.from(
           li.querySelectorAll("div > div > div > div > div > div > span")
         )
@@ -29,21 +31,26 @@ async function googleSearch(query) {
         return { href, title, abstract };
       });
     });
-    await browser.close();
     console.log(summaries);
     return summaries;
   } catch (error) {
     console.error("An error occurred:", error);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
+
 async function bingSearch(query) {
+  let browser;
   try {
     //https://serpapi.com/bing-search-api
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox']
-   });
+    });
     const page = await browser.newPage();
     await page.goto(
       `https://cn.bing.com/search?mkt=zh-cn&FORM=BEHPTB&q=${encodeURIComponent(
@@ -54,12 +61,12 @@ async function bingSearch(query) {
       const liElements = Array.from(
         document.querySelectorAll("#b_results > .b_algo")
       );
-      console.log(liElements)
       const firstFiveLiElements = liElements.slice(0, 5);
       return firstFiveLiElements.map((li) => {
         const linkElement = li.querySelector("a");
         const href = linkElement.getAttribute("href");
-        const title = li.querySelector("h2").textContent;
+        const titleElement = li.querySelector("h2");
+        const title = titleElement ? titleElement.textContent : "";
         const abstractEle = li.querySelector('div > p');
         let abstract = abstractEle ? abstractEle.textContent : "";
         if (abstract.length > 3) {
@@ -68,13 +75,17 @@ async function bingSearch(query) {
         return { href, title , abstract};
       });
     });
-    await browser.close();
     console.log(summaries);
     return summaries;
   } catch (error) {
     console.error("An error occurred:", error);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
+
 
 async function baiduSearch(query) {
   try {

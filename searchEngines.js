@@ -88,9 +88,10 @@ async function bingSearch(query) {
 
 
 async function baiduSearch(query) {
+  let browser;
   try {
     //https://serpapi.com/bing-search-api
-    const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox']
    });
@@ -124,12 +125,17 @@ async function baiduSearch(query) {
     return summaries;
   } catch (error) {
     console.error("An error occurred:", error);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
 async function yahooSearch(query) {
+  let browser;
   try {
-    const browser = await puppeteer.launch();
+    browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(
       `https://search.yahoo.com/search?p=${encodeURIComponent(
@@ -155,14 +161,19 @@ async function yahooSearch(query) {
     return summaries;
   } catch (error) {
     console.error("An error occurred:", error);
+  }finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
 async function duckduckgoSearch(query) {
+  let browser;
   try {
     //https://serpapi.com/duckduckgo-search-api
     // 可以改区域，这些设置的是港区
-    const browser = await puppeteer.launch();
+    browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(
       `https://duckduckgo.com/?q=${encodeURIComponent(query)}&kl=hk-tzh&ia=web`
@@ -191,6 +202,10 @@ async function duckduckgoSearch(query) {
     return summaries;
   } catch (error) {
     console.error("An error occurred:", error);
+  }finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
